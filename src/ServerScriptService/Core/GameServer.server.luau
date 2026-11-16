@@ -13,6 +13,7 @@ local StealManager = require(modules:WaitForChild("StealManager"))
 local DefenseManager = require(modules:WaitForChild("DefenseManager"))
 local DataManager = require(modules:WaitForChild("DataManager"))
 local ShopService = require(modules:WaitForChild("ShopService"))
+local MonetizationManager = require(modules:WaitForChild("MonetizationManager"))
 
 -- 1. Inicializar todos los sistemas del servidor en orden
 BaseManager.Init()
@@ -22,11 +23,15 @@ StealManager.Init()
 DefenseManager.Init()
 DataManager.Init()
 ShopService.Init()
+MonetizationManager.Init()
 
 -- 2. Configurar y cargar datos para cada jugador que entra al servidor
 local function onPlayerAdded(player: Player)
 	DataManager.LoadPlayerData(player)
 	StealManager.SetupPlayer(player)
+
+	-- Revisar GamePasses adquiridos previamente
+	MonetizationManager.CheckPlayerGamePasses(player)
 
 	player.CharacterAdded:Connect(function(character: Model)
 		BaseManager.TeleportPlayerToBase(player, character)
@@ -59,4 +64,4 @@ for _, player in Players:GetPlayers() do
 	task.spawn(onPlayerAdded, player)
 end
 
-print("✅ [Rouba a Fruta] Sistemas 1 a 7 (Barcos, Cofres, Producción, Robo, Defensas, DataStore y ShopService) activos.")
+print("✅ [Rouba a Fruta] Sistemas 1 a 8 (Barcos, Cofres, Producción, Robo, Defensas, DataStore, GUI y Monetización) activos.")

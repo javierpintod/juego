@@ -47,6 +47,66 @@ GameConfig.Defenses = {
 	},
 }
 
+-- Configuración de Monetización (Sistema 8)
+-- NOTA: Reemplaza estos IDs con los IDs reales creados en el Creator Dashboard de tu juego
+GameConfig.GamePasses = {
+	DoubleMoney = {
+		Id = 1000001,
+		DisplayName = "Doble Berries x2",
+		Description = "Duplica permanentemente todos los ingresos de tus frutas",
+	},
+	DoubleSpeed = {
+		Id = 1000002,
+		DisplayName = "Velocidad Pirata x2",
+		Description = "Corre más rápido incluso al escapar cargando fruta",
+	},
+	AutoCollect = {
+		Id = 1000003,
+		DisplayName = "Auto-Recolector",
+		Description = "Las Berries van directo a tu cuenta cada segundo sin pisar la DropZone",
+	},
+	ExtraSlot = {
+		Id = 1000004,
+		DisplayName = "Slot VIP #6",
+		Description = "Desbloquea el pedestal número 6 en tu barco para una fruta extra",
+	},
+	PermanentShield = {
+		Id = 1000005,
+		DisplayName = "Escudo Permanente",
+		Description = "Cúpula de protección total infinita para tu barco",
+	},
+}
+
+GameConfig.DeveloperProducts = {
+	BerriesPackSmall = {
+		Id = 2000001,
+		Amount = 1500,
+		DisplayName = "Bolsa de 1,500 Berries",
+	},
+	BerriesPackMedium = {
+		Id = 2000002,
+		Amount = 7500,
+		DisplayName = "Cofre de 7,500 Berries",
+	},
+	BerriesPackLarge = {
+		Id = 2000003,
+		Amount = 25000,
+		DisplayName = "Tesoro de 25,000 Berries",
+	},
+	LuckPotion = {
+		Id = 2000004,
+		Multiplier = 2,
+		DisplayName = "Poción de Suerte x2",
+		Description = "Duplica la probabilidad de frutas Legendarias y Míticas en cofres",
+	},
+	Shield10Min = {
+		Id = 2000005,
+		DurationSeconds = 600,
+		DisplayName = "Escudo de 10 Minutos",
+		Description = "Protección impenetrable durante 10 minutos continuos",
+	},
+}
+
 -- Rarezas y probabilidades base (Común 50%, Rara 30%, Épica 15%, Legendaria 4%, Mítica 1%)
 GameConfig.Rarities = {
 	Comun = {

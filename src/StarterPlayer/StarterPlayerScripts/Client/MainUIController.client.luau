@@ -4,7 +4,6 @@
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TweenService = game:GetService("TweenService")
-local SoundService = game:GetService("SoundService")
 
 local localPlayer = Players.LocalPlayer
 local playerGui = localPlayer:WaitForChild("PlayerGui") :: PlayerGui
@@ -14,6 +13,7 @@ local remotesFolder = ReplicatedStorage:WaitForChild("Remotes")
 
 local notifyEvent = remotesFolder:WaitForChild("NotifyEvent") :: RemoteEvent
 local buyRemote = remotesFolder:WaitForChild("BuyShopItemEvent") :: RemoteEvent
+local promptPurchaseEvent = remotesFolder:WaitForChild("PromptPurchaseEvent") :: RemoteEvent
 
 --------------------------------------------------------------------------------
 -- 1. CONSTRUCCIÓN AUTOMÁTICA DE LA INTERFAZ (ScreenGui)
@@ -24,7 +24,7 @@ screenGui.ResetOnSpawn = false
 screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 screenGui.Parent = playerGui
 
--- A. CONTADOR DE DINERO Y PRODUCCIÓN (Esquina superior izquierda)
+-- A. CONTADOR DE DINERO Y PRODUCCIÓN
 local topBar = Instance.new("Frame")
 topBar.Name = "TopBar"
 topBar.Size = UDim2.fromOffset(260, 75)
@@ -76,11 +76,11 @@ rateLabel.TextXAlignment = Enum.TextXAlignment.Left
 rateLabel.Text = "+0 Berries/s"
 rateLabel.Parent = topBar
 
--- B. BOTONES LATERALES (Tienda, Inventario)
+-- B. BOTONES LATERALES
 local sideMenu = Instance.new("Frame")
 sideMenu.Name = "SideMenu"
-sideMenu.Size = UDim2.fromOffset(65, 140)
-sideMenu.Position = UDim2.new(1, -80, 0.5, -70)
+sideMenu.Size = UDim2.fromOffset(65, 210)
+sideMenu.Position = UDim2.new(1, -80, 0.5, -105)
 sideMenu.BackgroundTransparency = 1
 sideMenu.Parent = screenGui
 
@@ -110,9 +110,10 @@ local function createSideButton(name: string, icon: string, order: number, color
 end
 
 local shopButton = createSideButton("ShopButton", "🛒", 1, Color3.fromRGB(40, 120, 220))
-local invButton = createSideButton("InvButton", "🏴‍☠️", 2, Color3.fromRGB(200, 70, 70))
+local robuxButton = createSideButton("RobuxButton", "💎", 2, Color3.fromRGB(220, 170, 30))
+local invButton = createSideButton("InvButton", "🏴‍☠️", 3, Color3.fromRGB(200, 70, 70))
 
--- C. CONTENEDOR DE NOTIFICACIONES ANIMADAS (Centro Superior)
+-- C. NOTIFICACIONES FLOTANTES
 local notifContainer = Instance.new("Frame")
 notifContainer.Name = "Notifications"
 notifContainer.Size = UDim2.fromOffset(450, 200)
@@ -126,7 +127,7 @@ notifLayout.Padding = UDim.new(0, 8)
 notifLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
 notifLayout.Parent = notifContainer
 
--- D. VENTANA FLOTANTE DE TIENDA
+-- D. VENTANA DE TIENDA (Berries)
 local shopWindow = Instance.new("Frame")
 shopWindow.Name = "ShopWindow"
 shopWindow.Size = UDim2.fromOffset(520, 400)
@@ -154,7 +155,7 @@ shopTitle.Font = Enum.Font.FredokaOne
 shopTitle.TextScaled = true
 shopTitle.TextColor3 = Color3.fromRGB(255, 235, 120)
 shopTitle.TextXAlignment = Enum.TextXAlignment.Left
-shopTitle.Text = "🛒 Tienda de Piratas"
+shopTitle.Text = "🛒 Tienda de Piratas (Berries)"
 shopTitle.Parent = shopWindow
 
 local shopClose = Instance.new("TextButton")
@@ -185,7 +186,66 @@ shopLayout.Padding = UDim.new(0, 10)
 shopLayout.SortOrder = Enum.SortOrder.LayoutOrder
 shopLayout.Parent = shopScroll
 
--- E. VENTANA DE INVENTARIO / BASE
+-- E. VENTANA DE MONETIZACIÓN (Robux - GamePasses y Productos)
+local robuxWindow = Instance.new("Frame")
+robuxWindow.Name = "RobuxWindow"
+robuxWindow.Size = UDim2.fromOffset(540, 420)
+robuxWindow.Position = UDim2.new(0.5, -270, 0.5, -210)
+robuxWindow.BackgroundColor3 = Color3.fromRGB(26, 24, 34)
+robuxWindow.BorderSizePixel = 0
+robuxWindow.Visible = false
+robuxWindow.Parent = screenGui
+
+local robuxCorner = Instance.new("UICorner")
+robuxCorner.CornerRadius = UDim.new(0, 16)
+robuxCorner.Parent = robuxWindow
+
+local robuxStroke = Instance.new("UIStroke")
+robuxStroke.Color = Color3.fromRGB(240, 190, 40)
+robuxStroke.Thickness = 3
+robuxStroke.Parent = robuxWindow
+
+local robuxTitle = Instance.new("TextLabel")
+robuxTitle.Name = "Title"
+robuxTitle.Size = UDim2.new(1, -60, 0, 45)
+robuxTitle.Position = UDim2.new(0, 20, 0, 10)
+robuxTitle.BackgroundTransparency = 1
+robuxTitle.Font = Enum.Font.FredokaOne
+robuxTitle.TextScaled = true
+robuxTitle.TextColor3 = Color3.fromRGB(255, 215, 60)
+robuxTitle.TextXAlignment = Enum.TextXAlignment.Left
+robuxTitle.Text = "💎 Tienda VIP (GamePasses y Ventajas)"
+robuxTitle.Parent = robuxWindow
+
+local robuxClose = Instance.new("TextButton")
+robuxClose.Name = "CloseBtn"
+robuxClose.Size = UDim2.fromOffset(35, 35)
+robuxClose.Position = UDim2.new(1, -45, 0, 10)
+robuxClose.BackgroundColor3 = Color3.fromRGB(210, 50, 50)
+robuxClose.Font = Enum.Font.FredokaOne
+robuxClose.Text = "X"
+robuxClose.TextColor3 = Color3.fromRGB(255, 255, 255)
+robuxClose.TextScaled = true
+robuxClose.Parent = robuxWindow
+
+local robuxCloseCorner = Instance.new("UICorner")
+robuxCloseCorner.CornerRadius = UDim.new(0, 8)
+robuxCloseCorner.Parent = robuxClose
+
+local robuxScroll = Instance.new("ScrollingFrame")
+robuxScroll.Name = "ItemList"
+robuxScroll.Size = UDim2.new(1, -30, 1, -75)
+robuxScroll.Position = UDim2.new(0, 15, 0, 60)
+robuxScroll.BackgroundTransparency = 1
+robuxScroll.ScrollBarThickness = 6
+robuxScroll.Parent = robuxWindow
+
+local robuxLayout = Instance.new("UIListLayout")
+robuxLayout.Padding = UDim.new(0, 10)
+robuxLayout.SortOrder = Enum.SortOrder.LayoutOrder
+robuxLayout.Parent = robuxScroll
+
+-- F. VENTANA DE INVENTARIO / BASE
 local invWindow = Instance.new("Frame")
 invWindow.Name = "InventoryWindow"
 invWindow.Size = UDim2.fromOffset(450, 320)
@@ -274,9 +334,8 @@ local function showNotification(message: string, color: Color3)
 	text.Text = message
 	text.Parent = banner
 
-	-- Animación de entrada
 	banner.Position = UDim2.new(0, 0, 0, -20)
-	banner.Transparency = 1
+	banner.BackgroundTransparency = 1
 	text.TextTransparency = 1
 
 	local fadeIn = TweenService:Create(banner, TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
@@ -287,7 +346,6 @@ local function showNotification(message: string, color: Color3)
 	fadeIn:Play()
 	textFadeIn:Play()
 
-	-- Retiro automático
 	task.delay(4, function()
 		if banner.Parent then
 			local fadeOut = TweenService:Create(banner, TweenInfo.new(0.3), { BackgroundTransparency = 1 })
@@ -306,8 +364,9 @@ notifyEvent.OnClientEvent:Connect(function(msg: string, col: Color3)
 end)
 
 --------------------------------------------------------------------------------
--- 3. POBLAR ELEMENTOS DE LA TIENDA
+-- 3. POBLAR TIENDAS
 --------------------------------------------------------------------------------
+-- A. Tienda de Berries
 local function addShopRow(title: string, desc: string, priceText: string, itemType: string, itemId: string)
 	local row = Instance.new("Frame")
 	row.Size = UDim2.new(1, 0, 0, 60)
@@ -360,33 +419,101 @@ local function addShopRow(title: string, desc: string, priceText: string, itemTy
 	end)
 end
 
--- Renglones de Cofres
 for chestId, data in GameConfig.Chests do
 	addShopRow(data.DisplayName, "Cofre con Frutas Místicas", tostring(data.Cost) .. " 🪙", "Chest", chestId)
 end
-
--- Renglones de Defensas
 addShopRow("🛡️ Escudo Temporal (60s)", "Protección total contra robos", tostring(GameConfig.Defenses.Shield.Cost) .. " 🪙", "Shield", "Default")
 addShopRow("⛓️ Mejorar Cadenas", "Aumenta el tiempo para robarte", "Mejorar 🪙", "Chains", "Upgrade")
 addShopRow("💣 Mejorar Cañón", "Dispara automáticamente a ladrones", "Mejorar 🪙", "Cannon", "Upgrade")
 
-shopScroll.CanvasSize = UDim2.new(0, 0, 0, shopLayout.AbsoluteContentSize.Y + 20)
-shopLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-	shopScroll.CanvasSize = UDim2.new(0, 0, 0, shopLayout.AbsoluteContentSize.Y + 20)
-end)
+-- B. Tienda de Robux (GamePasses y Developer Products)
+local function addRobuxRow(title: string, desc: string, purchaseType: string, targetId: number)
+	local row = Instance.new("Frame")
+	row.Size = UDim2.new(1, 0, 0, 60)
+	row.BackgroundColor3 = Color3.fromRGB(38, 34, 48)
+	row.BorderSizePixel = 0
+	row.Parent = robuxScroll
+
+	local corner = Instance.new("UICorner")
+	corner.CornerRadius = UDim.new(0, 10)
+	corner.Parent = row
+
+	local tLbl = Instance.new("TextLabel")
+	tLbl.Size = UDim2.new(0.68, 0, 0.5, 0)
+	tLbl.Position = UDim2.new(0, 12, 0, 6)
+	tLbl.BackgroundTransparency = 1
+	tLbl.Font = Enum.Font.FredokaOne
+	tLbl.TextScaled = true
+	tLbl.TextColor3 = Color3.fromRGB(255, 215, 80)
+	tLbl.TextXAlignment = Enum.TextXAlignment.Left
+	tLbl.Text = title
+	tLbl.Parent = row
+
+	local dLbl = Instance.new("TextLabel")
+	dLbl.Size = UDim2.new(0.68, 0, 0.4, 0)
+	dLbl.Position = UDim2.new(0, 12, 0.5, 0)
+	dLbl.BackgroundTransparency = 1
+	dLbl.Font = Enum.Font.FredokaOne
+	dLbl.TextScaled = true
+	dLbl.TextColor3 = Color3.fromRGB(200, 195, 210)
+	dLbl.TextXAlignment = Enum.TextXAlignment.Left
+	dLbl.Text = desc
+	dLbl.Parent = row
+
+	local buyBtn = Instance.new("TextButton")
+	buyBtn.Size = UDim2.new(0.28, -15, 0.75, 0)
+	buyBtn.Position = UDim2.new(0.72, 5, 0.125, 0)
+	buyBtn.BackgroundColor3 = Color3.fromRGB(220, 160, 30)
+	buyBtn.Font = Enum.Font.FredokaOne
+	buyBtn.TextScaled = true
+	buyBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+	buyBtn.Text = "Comprar R$"
+	buyBtn.Parent = row
+
+	local bCorner = Instance.new("UICorner")
+	bCorner.CornerRadius = UDim.new(0, 8)
+	bCorner.Parent = buyBtn
+
+	buyBtn.MouseButton1Click:Connect(function()
+		promptPurchaseEvent:FireServer(purchaseType, targetId)
+	end)
+end
+
+-- Agregar GamePasses
+for _, passData in GameConfig.GamePasses do
+	addRobuxRow("⭐ " .. passData.DisplayName, passData.Description, "GamePass", passData.Id)
+end
+
+-- Agregar Developer Products
+for _, prodData in GameConfig.DeveloperProducts do
+	local desc = (prodData :: any).Description or ("Añade " .. tostring((prodData :: any).Amount) .. " Berries al instante")
+	addRobuxRow("💎 " .. prodData.DisplayName, desc, "Product", prodData.Id)
+end
 
 --------------------------------------------------------------------------------
--- 4. CONTROL DE VENTANAS Y ACTUALIZACIÓN EN VIVO
+-- 4. CONTROL DE VENTANAS Y ESTADÍSTICAS
 --------------------------------------------------------------------------------
 shopButton.MouseButton1Click:Connect(function()
 	shopWindow.Visible = not shopWindow.Visible
-	if shopWindow.Visible then invWindow.Visible = false end
+	if shopWindow.Visible then
+		robuxWindow.Visible = false
+		invWindow.Visible = false
+	end
+end)
+
+robuxButton.MouseButton1Click:Connect(function()
+	robuxWindow.Visible = not robuxWindow.Visible
+	if robuxWindow.Visible then
+		shopWindow.Visible = false
+		invWindow.Visible = false
+	end
 end)
 
 invButton.MouseButton1Click:Connect(function()
 	invWindow.Visible = not invWindow.Visible
 	if invWindow.Visible then
 		shopWindow.Visible = false
+		robuxWindow.Visible = false
 		local baseName = localPlayer:GetAttribute("AssignedBase") or "Buscando..."
 		local bps = localPlayer:GetAttribute("BerriesPerSecond") or 0
 		invDesc.Text = string.format(
@@ -397,19 +524,13 @@ invButton.MouseButton1Click:Connect(function()
 	end
 end)
 
-shopClose.MouseButton1Click:Connect(function()
-	shopWindow.Visible = false
-end)
+shopClose.MouseButton1Click:Connect(function() shopWindow.Visible = false end)
+robuxClose.MouseButton1Click:Connect(function() robuxWindow.Visible = false end)
+invClose.MouseButton1Click:Connect(function() invWindow.Visible = false end)
 
-invClose.MouseButton1Click:Connect(function()
-	invWindow.Visible = false
-end)
-
--- Actualizar Berries y Berries/s en el contador superior
 local function updateStats()
 	local berries = localPlayer:GetAttribute("Berries") or 0
 	local rate = localPlayer:GetAttribute("BerriesPerSecond") or 0
-
 	berriesLabel.Text = string.format("%s Berries", tostring(berries))
 	rateLabel.Text = string.format("+%s Berries/s", tostring(rate))
 end
