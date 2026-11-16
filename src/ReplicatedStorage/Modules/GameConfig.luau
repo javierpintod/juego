@@ -1,0 +1,188 @@
+--!strict
+-- Ubicación en Roblox Studio: ReplicatedStorage/Modules/GameConfig (ModuleScript)
+
+local GameConfig = {}
+
+GameConfig.StartingBerries = 100
+
+-- Configuración general de las bases
+GameConfig.Bases = {
+	BaseSlots = 4,
+	MaxSlots = 6,
+	ExtraSlotCost = 2500,
+}
+
+-- Configuración del Sistema de Robo (Sistema 4)
+GameConfig.Stealing = {
+	DefaultWalkSpeed = 16,
+	CarryingWalkSpeed = 11,      -- Más lento al cargar una fruta robada para dar oportunidad al dueño
+	StealHoldDuration = 1.5,     -- Segundos manteniendo E para robar una fruta ajena
+	WeaponCooldown = 0.8,        -- Cooldown del Sable de Abordaje
+	HitboxRange = 6.5,           -- Alcance del golpe para atrapar al ladrón
+	StunDuration = 2.0,          -- Tiempo que el ladrón queda aturdido al ser golpeado
+}
+
+-- Rarezas y probabilidades base (Común 50%, Rara 30%, Épica 15%, Legendaria 4%, Mítica 1%)
+GameConfig.Rarities = {
+	Comun = {
+		DisplayName = "Común",
+		Chance = 50,
+		Color = Color3.fromRGB(180, 180, 180),
+		Order = 1,
+	},
+	Rara = {
+		DisplayName = "Rara",
+		Chance = 30,
+		Color = Color3.fromRGB(50, 150, 255),
+		Order = 2,
+	},
+	Epica = {
+		DisplayName = "Épica",
+		Chance = 15,
+		Color = Color3.fromRGB(170, 50, 255),
+		Order = 3,
+	},
+	Legendaria = {
+		DisplayName = "Legendaria",
+		Chance = 4,
+		Color = Color3.fromRGB(255, 190, 0),
+		Order = 4,
+	},
+	Mitica = {
+		DisplayName = "Mítica",
+		Chance = 1,
+		Color = Color3.fromRGB(255, 40, 80),
+		Order = 5,
+	},
+}
+
+export type FruitInfo = {
+	Id: string,
+	DisplayName: string,
+	Rarity: string,
+	BerriesPerSecond: number,
+	SellPrice: number,
+	Color: Color3,
+}
+
+GameConfig.Fruits = {
+	-- COMUNES (50%)
+	FrutaBrisa = {
+		Id = "FrutaBrisa",
+		DisplayName = "Fruta Brisa Marina",
+		Rarity = "Comun",
+		BerriesPerSecond = 2,
+		SellPrice = 25,
+		Color = Color3.fromRGB(190, 230, 220),
+	},
+	FrutaRoca = {
+		Id = "FrutaRoca",
+		DisplayName = "Fruta Coral de Roca",
+		Rarity = "Comun",
+		BerriesPerSecond = 3,
+		SellPrice = 35,
+		Color = Color3.fromRGB(150, 140, 130),
+	},
+
+	-- RARAS (30%)
+	FrutaMarea = {
+		Id = "FrutaMarea",
+		DisplayName = "Fruta Marea Viva",
+		Rarity = "Rara",
+		BerriesPerSecond = 8,
+		SellPrice = 100,
+		Color = Color3.fromRGB(40, 140, 255),
+	},
+	FrutaChispa = {
+		Id = "FrutaChispa",
+		DisplayName = "Fruta Chispa Solar",
+		Rarity = "Rara",
+		BerriesPerSecond = 12,
+		SellPrice = 140,
+		Color = Color3.fromRGB(255, 130, 40),
+	},
+
+	-- ÉPICAS (15%)
+	FrutaTempestad = {
+		Id = "FrutaTempestad",
+		DisplayName = "Fruta Tempestad Eléctrica",
+		Rarity = "Epica",
+		BerriesPerSecond = 35,
+		SellPrice = 400,
+		Color = Color3.fromRGB(160, 70, 255),
+	},
+	FrutaEspejismo = {
+		Id = "FrutaEspejismo",
+		DisplayName = "Fruta Espejismo Astral",
+		Rarity = "Epica",
+		BerriesPerSecond = 45,
+		SellPrice = 500,
+		Color = Color3.fromRGB(230, 80, 210),
+	},
+
+	-- LEGENDARIAS (4%)
+	FrutaAbismo = {
+		Id = "FrutaAbismo",
+		DisplayName = "Fruta Abismo Oscuro",
+		Rarity = "Legendaria",
+		BerriesPerSecond = 150,
+		SellPrice = 1800,
+		Color = Color3.fromRGB(255, 195, 0),
+	},
+	FrutaFenix = {
+		Id = "FrutaFenix",
+		DisplayName = "Fruta Ave Celeste",
+		Rarity = "Legendaria",
+		BerriesPerSecond = 200,
+		SellPrice = 2400,
+		Color = Color3.fromRGB(0, 240, 255),
+	},
+
+	-- MÍTICAS (1%)
+	FrutaKraken = {
+		Id = "FrutaKraken",
+		DisplayName = "Fruta Leviatán Ancestral",
+		Rarity = "Mitica",
+		BerriesPerSecond = 750,
+		SellPrice = 9000,
+		Color = Color3.fromRGB(255, 30, 70),
+	},
+}
+
+GameConfig.Chests = {
+	CofreBasico = {
+		DisplayName = "Cofre de Marinero",
+		Cost = 50,
+		Weights = {
+			Comun = 50,
+			Rara = 30,
+			Epica = 15,
+			Legendaria = 4,
+			Mitica = 1,
+		},
+	},
+	CofrePirata = {
+		DisplayName = "Cofre de Capitán",
+		Cost = 500,
+		Weights = {
+			Comun = 20,
+			Rara = 45,
+			Epica = 25,
+			Legendaria = 8,
+			Mitica = 2,
+		},
+	},
+	CofreEmperador = {
+		DisplayName = "Cofre de Leyenda",
+		Cost = 4500,
+		Weights = {
+			Comun = 0,
+			Rara = 35,
+			Epica = 45,
+			Legendaria = 15,
+			Mitica = 5,
+		},
+	},
+}
+
+return GameConfig
