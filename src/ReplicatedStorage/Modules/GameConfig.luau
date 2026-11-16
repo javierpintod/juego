@@ -22,6 +22,31 @@ GameConfig.Stealing = {
 	StunDuration = 2.0,          -- Tiempo que el ladrón queda aturdido al ser golpeado
 }
 
+-- Configuración del Sistema de Defensas (Sistema 5)
+GameConfig.Defenses = {
+	Shield = {
+		Cost = 600,
+		DurationSeconds = 60,     -- 1 minuto de protección comprando con Berries
+		CooldownSeconds = 90,     -- Cooldown para evitar spam infinito con Berries (no aplica a Robux)
+	},
+	Chains = {
+		MaxLevel = 3,
+		Levels = {
+			[1] = { Cost = 800, ExtraHoldTime = 1.0, DisplayName = "Cadenas de Bronce (+1.0s robo)" },
+			[2] = { Cost = 2200, ExtraHoldTime = 2.0, DisplayName = "Cadenas de Acero (+2.0s robo)" },
+			[3] = { Cost = 5500, ExtraHoldTime = 3.5, DisplayName = "Cadenas de Kairoseki (+3.5s robo)" },
+		},
+	},
+	Cannon = {
+		MaxLevel = 3,
+		Levels = {
+			[1] = { Cost = 1500, FireInterval = 5.5, Range = 32, DisplayName = "Cañón de Cubierta Nv.1" },
+			[2] = { Cost = 4000, FireInterval = 4.0, Range = 42, DisplayName = "Cañón Doble Nv.2" },
+			[3] = { Cost = 9500, FireInterval = 2.5, Range = 55, DisplayName = "Cañón Real de Asedio Nv.3" },
+		},
+	},
+}
+
 -- Rarezas y probabilidades base (Común 50%, Rara 30%, Épica 15%, Legendaria 4%, Mítica 1%)
 GameConfig.Rarities = {
 	Comun = {
@@ -117,7 +142,7 @@ GameConfig.Fruits = {
 		Rarity = "Epica",
 		BerriesPerSecond = 45,
 		SellPrice = 500,
-		Color = Color3.fromRGB(230, 80, 210),
+		Color = Color3.fromRGB(250, 80, 210),
 	},
 
 	-- LEGENDARIAS (4%)

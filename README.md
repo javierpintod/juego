@@ -11,5 +11,6 @@ Cada jugador posee un barco base donde coloca **Frutas Místicas** obtenidas en 
 - `src/ServerScriptService/Modules/ChestManager.luau`: Sistema 2 - Apertura de cofres con RNG ponderado, generación de frutas y venta.
 - `src/ServerScriptService/Modules/ProductionManager.luau`: Sistema 3 - Generación de Berries por segundo, cofre recolector (`DropZone`) y Auto-Collect.
 - `src/ServerScriptService/Modules/StealManager.luau`: Sistema 4 - Robo de frutas entre barcos, penalización de velocidad, Sable de Abordaje para derribar ladrones y entrega en la `DropZone`.
+- `src/ServerScriptService/Modules/DefenseManager.luau`: Sistema 5 - Defensas comprables del barco (Escudo Místico Temporal/Permanente, Cadenas de Kairoseki Nv.1-3 y Cañón Pirata Automático Nv.1-3).
 - `src/ServerScriptService/Core/GameServer.server.luau`: Inicializador principal del servidor.
 - `src/StarterPlayer/StarterPlayerScripts/Client/TempNotifications.client.luau`: Receptor de alertas en el cliente.

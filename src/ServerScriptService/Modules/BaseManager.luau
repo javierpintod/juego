@@ -16,7 +16,7 @@ export type SlotData = {
 	Unlocked: boolean,
 	FruitId: string?,
 	FruitModel: Model?,
-	IsStolenInTransit: boolean, -- true mientras un ladrón lleva esta fruta en la mano
+	IsStolenInTransit: boolean,
 	UnlockPrompt: ProximityPrompt?,
 }
 
@@ -25,7 +25,11 @@ export type BaseData = {
 	Owner: Player?,
 	Slots: { [number]: SlotData },
 	ShieldActive: boolean,
+	PermanentShield: boolean,
+	ShieldExpiresAt: number,
+	ShieldCooldownUntil: number,
 	ChainsLevel: number,
+	CannonLevel: number,
 	StoredBerries: number,
 }
 
@@ -174,7 +178,11 @@ function BaseManager.Init()
 			Owner = nil,
 			Slots = slotsTable,
 			ShieldActive = false,
+			PermanentShield = false,
+			ShieldExpiresAt = 0,
+			ShieldCooldownUntil = 0,
 			ChainsLevel = 0,
+			CannonLevel = 0,
 			StoredBerries = 0,
 		}
 
@@ -214,7 +222,11 @@ function BaseManager.AssignBaseToPlayer(player: Player): BaseData?
 			baseData.Owner = player
 			baseData.StoredBerries = 0
 			baseData.ShieldActive = false
+			baseData.PermanentShield = false
+			baseData.ShieldExpiresAt = 0
+			baseData.ShieldCooldownUntil = 0
 			baseData.ChainsLevel = 0
+			baseData.CannonLevel = 0
 			playerToBase[player] = baseData
 
 			player:SetAttribute("AssignedBase", baseData.Model.Name)
@@ -271,7 +283,11 @@ function BaseManager.ReleasePlayerBase(player: Player)
 
 	baseData.Owner = nil
 	baseData.ShieldActive = false
+	baseData.PermanentShield = false
+	baseData.ShieldExpiresAt = 0
+	baseData.ShieldCooldownUntil = 0
 	baseData.ChainsLevel = 0
+	baseData.CannonLevel = 0
 	baseData.StoredBerries = 0
 	baseData.Model:SetAttribute("OwnerUserId", nil)
 	playerToBase[player] = nil

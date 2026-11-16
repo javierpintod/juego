@@ -14,7 +14,6 @@ local ChestManager = {}
 
 local rng = Random.new()
 
--- Callback registrado por StealManager (Sistema 4) para procesar robos sin dependencias circulares
 local onStealAttemptCallback: ((thief: Player, victimOwner: Player, slotData: BaseManager.SlotData, fruitId: string) -> ())? = nil
 
 function ChestManager.SetStealCallback(
@@ -227,11 +226,15 @@ function ChestManager.PlaceFruitInSlot(owner: Player, slotData: BaseManager.Slot
 
 		-- 2. Prompt para que OTROS jugadores puedan ROBAR esta fruta (Tecla E)
 		local ownerBase = BaseManager.GetPlayerBase(owner)
-		local extraHold = if ownerBase then ownerBase.ChainsLevel * 0.75 else 0
+		local chainsLvl = if ownerBase then ownerBase.ChainsLevel else 0
+		local chainData = if chainsLvl > 0 then GameConfig.Defenses.Chains.Levels[chainsLvl] else nil
+		local extraHold = if chainData then chainData.ExtraHoldTime else 0
 
 		local stealPrompt = Instance.new("ProximityPrompt")
 		stealPrompt.Name = "StealFruitPrompt"
-		stealPrompt.ActionText = "🏴‍☠️ Robar Fruta"
+		stealPrompt.ActionText = if chainsLvl > 0
+			then "⛓️ Robar Fruta (Cadenas Nv." .. tostring(chainsLvl) .. ")"
+			else "🏴‍☠️ Robar Fruta"
 		stealPrompt.ObjectText = fruitInfo.DisplayName
 		stealPrompt.HoldDuration = GameConfig.Stealing.StealHoldDuration + extraHold
 		stealPrompt.KeyboardKeyCode = Enum.KeyCode.E

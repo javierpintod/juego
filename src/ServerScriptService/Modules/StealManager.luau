@@ -423,6 +423,10 @@ function StealManager.CleanupPlayer(player: Player)
 	weaponCooldowns[player] = nil
 end
 
+function StealManager.GetActiveHeist(player: Player): ActiveHeist?
+	return activeHeistsByThief[player]
+end
+
 function StealManager.Init()
 	ChestManager.SetStealCallback(StealManager.TryStartSteal)
 	ProductionManager.SetDropZoneDeliveryCallback(StealManager.TryCompleteHeist)
