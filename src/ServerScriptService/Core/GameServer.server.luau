@@ -12,6 +12,7 @@ local ProductionManager = require(modules:WaitForChild("ProductionManager"))
 local StealManager = require(modules:WaitForChild("StealManager"))
 local DefenseManager = require(modules:WaitForChild("DefenseManager"))
 local DataManager = require(modules:WaitForChild("DataManager"))
+local ShopService = require(modules:WaitForChild("ShopService"))
 
 -- 1. Inicializar todos los sistemas del servidor en orden
 BaseManager.Init()
@@ -20,12 +21,11 @@ ProductionManager.Init()
 StealManager.Init()
 DefenseManager.Init()
 DataManager.Init()
+ShopService.Init()
 
 -- 2. Configurar y cargar datos para cada jugador que entra al servidor
 local function onPlayerAdded(player: Player)
-	-- Carga desde DataStore y restauración de slots/frutas/defensas
 	DataManager.LoadPlayerData(player)
-
 	StealManager.SetupPlayer(player)
 
 	player.CharacterAdded:Connect(function(character: Model)
@@ -41,11 +41,7 @@ end
 -- 3. Guardar datos en DataStore y limpiar cuando un jugador sale
 local function onPlayerRemoving(player: Player)
 	local baseData = BaseManager.GetPlayerBase(player)
-
-	-- Primero devolvemos frutas en tránsito o cancelamos robos activos
 	StealManager.CleanupPlayer(player)
-
-	-- Guardado seguro en DataStore antes de liberar la base
 	DataManager.SavePlayerData(player)
 
 	if baseData then
@@ -63,4 +59,4 @@ for _, player in Players:GetPlayers() do
 	task.spawn(onPlayerAdded, player)
 end
 
-print("✅ [Rouba a Fruta] Sistemas 1 a 6 (Barcos, Cofres, Producción, Robo, Defensas y DataStore) activos.")
+print("✅ [Rouba a Fruta] Sistemas 1 a 7 (Barcos, Cofres, Producción, Robo, Defensas, DataStore y ShopService) activos.")
